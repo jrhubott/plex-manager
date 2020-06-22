@@ -486,14 +486,22 @@ def performAction(file, action, media_id=0, location="", parentFolder=None):
         return False
 
     if test or action.startswith('f'):  # Test file or Flag file
+        #check if file exists in directory
         if not is_file:
             log("[NOT FOUND] " + file)
-            return False
         if show_size:
             FlaggedSize += os.stat(file).st_size
-        log("**[FLAGGED] " + file)
-        ActionHistory.append("[FLAGGED] " + file)
-        FlaggedCount += 1
+
+        if action.startswith('f'):
+            log("**[FLAGGED] " + file)
+            ActionHistory.append("[FLAGGED] " + file)
+            FlaggedCount += 1
+
+        elif action.startswith('d'):
+            log("**[TEST DELETE] " + file)
+            ActionHistory.append("[TEST DELETE] " + file)
+            DeleteCount += 1
+
         return False
     elif action.startswith('d') and Settings['plex_delete']:  # Delete using Plex Web API
         try:
@@ -859,6 +867,7 @@ def checkShow(showDirectory):
     media_container = show.getElementsByTagName("MediaContainer")[0]
     show_id = media_container.getAttribute('key')
     show_name = media_container.getAttribute('parentTitle')
+
     for key in Settings['ShowPreferences']:
         if (key.lower() in show_name.lower()) or (key == show_id):
             show_settings.update(Settings['ShowPreferences'][key])
