@@ -8,7 +8,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/plexcleaner/plexcleaner.py",
+            "program": "${workspaceFolder}/plex-manager/plexcleaner/plexcleaner.py",
             "args": ["--test","--host=htpc.home.rhusoft.com"],
             "console": "integratedTerminal"
         }
