@@ -890,6 +890,8 @@ def checkShow(showDirectory):
     global KeptSize
     global FileCount
     # Parse all of the episode information from the season pages
+    
+    profile_match = False
     show_settings = default_settings.copy()
     show_metadata = getURLX(
         Settings['Host'] + ":" + Settings['Port'] + '/library/metadata/' + showDirectory.getAttribute('ratingKey'))
@@ -905,11 +907,17 @@ def checkShow(showDirectory):
     show_id = media_container.getAttribute('key')
     show_name = media_container.getAttribute('parentTitle')
 
+    log(show_name)
+
     for collection in collections:
         collection_tag = collection.getAttribute('tag')
         if collection_tag and collection_tag in Settings['Profiles']:
             show_settings.update(Settings['Profiles'][collection_tag])
-            log(show_name + " - " + collection_tag)
+            log(" --->  " + collection_tag)
+            profile_match = True
+
+    if profile_match == False:
+        return 0
 
     if debug_mode:
         log(str(show_settings), True)
