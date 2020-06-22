@@ -488,7 +488,7 @@ def performAction(file, action, media_id=0, location="", parentFolder=None):
 
     if test or action.startswith('f'):  # Test file or Flag file
         #check if file exists in directory
-        if not is_file:
+        if not is_file and debug_mode:
             log("[NOT FOUND] " + file)
         if show_size:
             FlaggedSize += os.stat(file).st_size
@@ -857,21 +857,26 @@ def checkShow(showDirectory):
     show_metadata = getURLX(
         Settings['Host'] + ":" + Settings['Port'] + '/library/metadata/' + showDirectory.getAttribute('ratingKey'))
     collections = show_metadata.getElementsByTagName("Collection")
-    for collection in collections:
-        collection_tag = collection.getAttribute('tag')
-        if collection_tag and collection_tag in Settings['Profiles']:
-            show_settings.update(Settings['Profiles'][collection_tag])
-            print("Using profile: " + collection_tag)
-    if debug_mode:
-        log(str(show_settings), True)
+
     show = getURLX(Settings['Host'] + ":" + Settings['Port'] + showDirectory.getAttribute('key'))
     if not show:  # Check if show page is None or empty
         log("Failed to load show page. Skipping...")
         return 0
+
     media_container = show.getElementsByTagName("MediaContainer")[0]
     show_id = media_container.getAttribute('key')
     show_name = media_container.getAttribute('parentTitle')
 
+    for collection in collections:
+        collection_tag = collection.getAttribute('tag')
+        if collection_tag and collection_tag in Settings['Profiles']:
+            show_settings.update(Settings['Profiles'][collection_tag])
+            log(show_name + " - " + collection_tag)
+
+    if debug_mode:
+        log(str(show_settings), True)
+
+    
     for key in Settings['ShowPreferences']:
         if (key.lower() in show_name.lower()) or (key == show_id):
             show_settings.update(Settings['ShowPreferences'][key])
@@ -1095,7 +1100,7 @@ if __name__ == "__main__":
         print("Settings saved. Exiting...")
         exit()
 
-    if test:
+    if debug_mode:
         print(json.dumps(Settings, indent=2, sort_keys=False))  # if testing print out the loaded settings in the console
 
     if args.update_config:
