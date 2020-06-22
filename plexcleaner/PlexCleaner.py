@@ -462,8 +462,9 @@ def performAction(file, action, media_id=0, location="", parentFolder=None):
 
     file = getLocalPath(file)
     action = action.lower()
-    if action.startswith('k'):  # Keep file
-        log("[KEEPING] " + file)
+    if action.startswith('k'):  # Keep file 
+        if debug_mode:
+            log("[KEEPING] " + file)
         return False
     for path in Settings['default_ignoreFolders']:
         if file.startswith(path):
@@ -694,7 +695,8 @@ def checkUsersWatched(users, media_id, progress_as_watched):
             if compareDay == -1 or DaysSinceVideoLastViewed > compareDay:  # Find the user who has seen the episode first for ANY user
                 compareDay = DaysSinceVideoLastViewed
         elif DaysSinceVideoLastViewed == -1:
-            log("[INFO] " + u + " has not seen video " + media_id)
+            if debug_mode:
+                log("[INFO] " + u + " has not seen video " + media_id)
             return -1                                                    #Shortcut out, user in list has not seen video
         elif compareDay == -1 or DaysSinceVideoLastViewed < compareDay:  # Find the user who has seen the episode last, minimum DSVLW
             compareDay = DaysSinceVideoLastViewed
@@ -766,12 +768,14 @@ def checkMovies(document, section):
                 compareDay = m['DaysSinceVideoAdded']
             else:
                 compareDay = m['DaysSinceVideoLastViewed']
-            log("%s | Viewed: %d | Days Since Viewed: %d | On Deck: %s" % (
+            if debug_mode:
+                log("%s | Viewed: %d | Days Since Viewed: %d | On Deck: %s" % (
                 title, m['view'], compareDay, onDeck))
             checkedWatched = (m['view'] > 0 or (0 < movie_settings['progressAsWatched'] < m['progress']))
         else:
             compareDay = m['DaysSinceVideoAdded']
-            log("%s | Viewed: %d | Days Since Viewed: %d | On Deck: %s" % (
+            if debug_mode:
+                log("%s | Viewed: %d | Days Since Viewed: %d | On Deck: %s" % (
                 title, m['view'], compareDay, onDeck))
             checkedWatched = True
         FileCount += 1
@@ -785,11 +789,11 @@ def checkMovies(document, section):
                              location=movie_settings['location']):
                 changes += 1
         else:
-            log('[KEEPING] ' + m['file'])
+            if debug_mode:
+                log('[KEEPING] ' + m['file'])
             KeptCount += 1
             if show_size and os.path.isfile(m['file']):
                 KeptSize += os.stat(m['file']).st_size
-        log("")
     if Settings.get('cleanup_movie_folders', False):
         log("Cleaning up orphaned folders less than " + str(Settings['minimum_folder_size']) + "MB in Section " + section)
         cleanUpFolders(section, Settings['minimum_folder_size'])
@@ -874,8 +878,8 @@ def checkShow(showDirectory):
             break
     # if action is keep then skip checking
     if show_settings['action'].startswith('k'):  # If keeping on show just skip checking
-        log("[KEEPING] " + show_name)
-        log("")
+        if debug_mode:
+            log("[KEEPING] " + show_name)
         return 0
     check_users = []
     if show_settings['homeUsers']:
@@ -937,11 +941,13 @@ def checkShow(showDirectory):
         ep = episodes[k]
         onDeck = CheckOnDeck(ep['media_id'])
         if show_settings['watched']:
-            log("%s - S%sxE%s - %s | Viewed: %d | Days Since Last Viewed: %d | On Deck: %s" % (
+            if debug_mode:
+                og("%s - S%sxE%s - %s | Viewed: %d | Days Since Last Viewed: %d | On Deck: %s" % (
                 show_name, ep['season'], ep['episode'], ep['title'], ep['view'], ep['compareDay'], onDeck))
             checkWatched = (ep['view'] > 0 or (0 < show_settings['progressAsWatched'] < ep['progress']))
         else:
-            log("%s - S%sxE%s - %s | Viewed: %d | Days Since Added: %d | On Deck: %s" % (
+            if debug_mode:
+                log("%s - S%sxE%s - %s | Viewed: %d | Days Since Added: %d | On Deck: %s" % (
                 show_name, ep['season'], ep['episode'], ep['title'], ep['view'], ep['compareDay'], onDeck))
             checkWatched = True
         # if we have more episodes or it's been longer than the max days, then check if we can delete the file
@@ -961,7 +967,8 @@ def checkShow(showDirectory):
                 if debug_mode:
                     print("Watched status is %s and compare day is %d and deck status is %s" % (
                     str(checkWatched), ep['compareDay'], str(not checkDeck)))
-                log('[KEEPING] ' + getLocalPath(ep['file']))
+                    log('[KEEPING] ' + getLocalPath(ep['file']))
+
                 KeptCount += 1
                 if show_size and os.path.isfile(ep['file']):
                     KeptSize += os.stat(getLocalPath(ep['file'])).st_size
@@ -970,11 +977,10 @@ def checkShow(showDirectory):
                 print("Episode is %d and max days is %s" % (
                 len(episodes) - k, str(ep['compareDay'] > show_settings['maxDays'] > 0)))
                 print(str(k))
-            log('[KEEPING] ' + getLocalPath(ep['file']))
+                log('[KEEPING] ' + getLocalPath(ep['file']))
             KeptCount += 1
             if show_size and os.path.isfile(ep['file']):
                 KeptSize += os.stat(getLocalPath(ep['file'])).st_size
-        log("")
         count += 1
     return changes
 
@@ -1277,7 +1283,6 @@ if __name__ == "__main__":
             log("[ERROR] Failed to load Section %s. Skipping..." % Section, error=True)
             continue
         SectionName = doc.getElementsByTagName("MediaContainer")[0].getAttribute("title1")
-        log("")
         log("--------- Section " + Section + ": " + SectionName + " -----------------------------------")
 
         group = doc.getElementsByTagName("MediaContainer")[0].getAttribute("viewGroup")
