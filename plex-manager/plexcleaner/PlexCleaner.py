@@ -507,21 +507,24 @@ def performAction(file, action, media_id=0, location="", parentFolder=None):
     if test or action.startswith('f'):  # Test file or Flag file
         # check if file exists in directory
         if not is_file and debug_mode:
-            log("[NOT FOUND] " + file)
+            if debug_mode:
+                log("[NOT FOUND] " + file)
         if show_size:
             FlaggedSize += os.stat(file).st_size
 
         if action.startswith('f'):
-            log("**[FLAGGED] " + file)
+            if debug_mode:
+                log("**[FLAGGED] " + file)
             ActionHistory.append("[FLAGGED] " + file)
             FlaggedCount += 1
 
         elif action.startswith('d'):
-            log("**[TEST DELETE] " + file)
+            if debug_mode:
+                log("**[TEST DELETE] " + file)
             ActionHistory.append("[TEST DELETE] " + file)
             DeleteCount += 1
 
-        return False
+        return True
     # Delete using Plex Web API
     elif action.startswith('d') and Settings['plex_delete']:
         try:
@@ -534,7 +537,8 @@ def performAction(file, action, media_id=0, location="", parentFolder=None):
                 log("Unable to plex delete file: %s" % file)
                 return False
             DeleteCount += 1
-            log("**[DELETED] " + file)
+            if debug_mode:
+                log("**[DELETED] " + file)
             ActionHistory.append("[DELETED] " + file)
             return True
         except Exception as e:
@@ -557,7 +561,8 @@ def performAction(file, action, media_id=0, location="", parentFolder=None):
                 if show_size:
                     CopySize += os.stat(f).st_size
                 shutil.copy(os.path.realpath(f), location)
-                log("**[COPIED] " + file)
+                if debug_mode:
+                    log("**[COPIED] " + file)
             ActionHistory.append("[COPIED] " + filelist[0])
             CopyCount += 1
             return True
@@ -571,7 +576,8 @@ def performAction(file, action, media_id=0, location="", parentFolder=None):
                     MoveSize += os.stat(f).st_size
                 os.utime(os.path.realpath(f), None)
                 shutil.move(os.path.realpath(f), location)
-                log("**[MOVED] " + f)
+                if debug_mode:
+                    log("**[MOVED] " + f)
             except Exception as e:
                 log("[ERROR] Error moving file: %s" %
                     e, debug=True, error=True)
@@ -587,7 +593,8 @@ def performAction(file, action, media_id=0, location="", parentFolder=None):
                 if show_size:
                     DeleteSize += os.stat(f).st_size
                 os.remove(f)
-                log("**[DELETED] " + f)
+                if debug_mode:
+                    log("**[DELETED] " + f)
             except Exception as e:
                 log("[ERROR] Error deleting file: %s" %
                     e, debug=True, error=True)
@@ -596,7 +603,8 @@ def performAction(file, action, media_id=0, location="", parentFolder=None):
         DeleteCount += 1
         return True
     else:
-        log("[FLAGGED] " + file)
+        if debug_mode:
+            log("[FLAGGED] " + file)
         ActionHistory.append("[FLAGGED] " + file)
         FlaggedCount += 1
         if show_size and os.path.isfile(file):
@@ -916,8 +924,7 @@ def checkShow(showDirectory):
             log(" --->  " + collection_tag)
             profile_match = True
 
-    if profile_match == False:
-        return 0
+    
 
     if debug_mode:
         log(str(show_settings), True)
@@ -999,7 +1006,7 @@ def checkShow(showDirectory):
         onDeck = CheckOnDeck(ep['media_id'])
         if show_settings['watched']:
             if debug_mode:
-                og("%s - S%sxE%s - %s | Viewed: %d | Days Since Last Viewed: %d | On Deck: %s" % (
+                log("%s - S%sxE%s - %s | Viewed: %d | Days Since Last Viewed: %d | On Deck: %s" % (
                     show_name, ep['season'], ep['episode'], ep['title'], ep['view'], ep['compareDay'], onDeck))
             checkWatched = (ep['view'] > 0 or (
                 0 < show_settings['progressAsWatched'] < ep['progress']))
@@ -1041,6 +1048,9 @@ def checkShow(showDirectory):
             if show_size and os.path.isfile(ep['file']):
                 KeptSize += os.stat(getLocalPath(ep['file'])).st_size
         count += 1
+
+    if changes > 0:
+        log("    --->  %d actions performed on %d files" % (changes,count))
     return changes
 
 
