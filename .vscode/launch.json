@@ -9,8 +9,26 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/plex-manager/plexcleaner/PlexCleaner.py",
-            "args": ["--test","--host=htpc.home.rhusoft.com"],
+            "args": [
+                "--test",
+                "--host=htpc.home.rhusoft.com"
+            ],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Docker: Python - General",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "python": {
+                "pathMappings": [
+                    {
+                        "localRoot": "${workspaceFolder}",
+                        "remoteRoot": "/app"
+                    }
+                ],
+                "projectType": "general"
+            }
         }
     ]
 }
