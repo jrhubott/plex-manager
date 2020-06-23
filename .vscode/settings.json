@@ -1,4 +1,4 @@
 {
     // create a symboloic link to the required python virtual environment
-    "python.pythonPath": "virtualenv/bin/python"
+    "python.pythonPath": ".virtualenv/bin/python"
 }
