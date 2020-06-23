@@ -898,7 +898,7 @@ def checkShow(showDirectory):
     global KeptSize
     global FileCount
     # Parse all of the episode information from the season pages
-    
+
     profile_match = False
     show_settings = default_settings.copy()
     show_metadata = getURLX(
@@ -923,8 +923,6 @@ def checkShow(showDirectory):
             show_settings.update(Settings['Profiles'][collection_tag])
             log(" --->  " + collection_tag)
             profile_match = True
-
-    
 
     if debug_mode:
         log(str(show_settings), True)
@@ -1050,7 +1048,7 @@ def checkShow(showDirectory):
         count += 1
 
     if changes > 0:
-        log("    --->  %d actions performed on %d files" % (changes,count))
+        log("    --->  %d actions performed on %d files" % (changes, count))
     return changes
 
 
