@@ -16,9 +16,10 @@ RUN useradd appuser
 USER appuser
 
 WORKDIR /app
+ADD config/* /config/
 ADD --chown=appuser:0 plex-manager /app/
 
-
+VOLUME /config
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 ENTRYPOINT ["python", "plexcleaner/PlexCleaner.py"]

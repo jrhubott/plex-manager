@@ -1159,7 +1159,7 @@ if __name__ == "__main__":
     test = args.test or Settings.get('test', False)
 
     if test:
-        log("*****TEST MODE IS ENABLED*****")
+        print("*****TEST MODE IS ENABLED*****")
 
     if args.dump:
         # Output settings to a json config file and exit
@@ -1408,6 +1408,13 @@ if __name__ == "__main__":
         log("** Currently in testing mode. Please review the changes below. **")
         log("   Remove test from the configuration if everything looks okay.")
         log("")
+
+    if len(ActionHistory) > 0:
+        log("  Changed Files:")
+        for item in ActionHistory:
+            log("  " + item)
+
+    log("")
     log("  Config file: " + Config)
     log("  Total File Count      " + str(FileCount) + (
         " (" + convert_size(KeptSize + FlaggedSize) + ")" if show_size and KeptSize + FlaggedSize > 0 else ""))
@@ -1424,11 +1431,7 @@ if __name__ == "__main__":
         " (" + convert_size(FlaggedSize) + ")" if show_size and FlaggedSize > 0 else ""))
     log("  Rescanned Sections    " + ', '.join(str(x)
                                                for x in RescannedSections))
-    if len(ActionHistory) > 0:
-        log("")
-        log("  Changed Files:")
-        for item in ActionHistory:
-            log("  " + item)
+    
     if len(ErrorLog) > 0:
         log("")
         log("  Errors:")

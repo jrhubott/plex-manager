@@ -6,4 +6,4 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    command: ["--test"]
+    command: ["--test","--host=htpc.home.rhusoft.com"]
