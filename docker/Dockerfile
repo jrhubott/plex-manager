@@ -11,12 +11,14 @@ ENV PYTHONUNBUFFERED 1
 ADD requirements.txt .
 RUN python -m pip install -r requirements.txt
 
-WORKDIR /app
-ADD plex-manager/* /app
-
 # Switching to a non-root user, please refer to https://aka.ms/vscode-docker-python-user-rights
-RUN useradd appuser && chown -R appuser /app
+RUN useradd appuser
 USER appuser
 
+WORKDIR /app
+ADD --chown=appuser:0 plex-manager /app/
+
+
+
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["python", "PlexCleaner.py"]
+ENTRYPOINT ["python", "plexcleaner/PlexCleaner.py"]

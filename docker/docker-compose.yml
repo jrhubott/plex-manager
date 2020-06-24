@@ -2,7 +2,8 @@ version: '3.4'
 
 services:
   plexmanager:
-    image: plexmanager
+    image: jrhubott/plexmanager
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: ["--test"]

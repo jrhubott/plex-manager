@@ -1158,6 +1158,9 @@ if __name__ == "__main__":
 
     test = args.test or Settings.get('test', False)
 
+    if test:
+        log("*****TEST MODE IS ENABLED*****")
+
     if args.dump:
         # Output settings to a json config file and exit
         print("Saving settings to " + args.dump)
@@ -1463,6 +1466,7 @@ if __name__ == "__main__":
                 " (" + convert_size(FlaggedSize) + ")" if show_size and FlaggedSize > 0 else ""))
             EmailContents.append("  Rescanned Sections    " +
                                  ', '.join(str(x) for x in RescannedSections))
+            
             if len(ActionHistory) > 0:
                 EmailContents.append("\n")
                 EmailContents.append("  Changed Files:")
@@ -1476,6 +1480,9 @@ if __name__ == "__main__":
                     EmailContents.append(
                         "  " + item.encode('ascii', 'replace').decode('utf-8'))
             EmailContents.append("\n")
+
+            
+
             EmailContents.append(
                 "----------------------------------------------------------------------------")
             EmailContents.append("</pre>")
@@ -1484,6 +1491,8 @@ if __name__ == "__main__":
                          Settings["EmailPassword"], Settings["EmailServerUseTLS"]):
                 log("")
                 log("Email of script summary sent successfully.")
+
+            
         except Exception as e:
             log(e, True)
             log("Could not send email.  Please ensure a valid server, port, username, password, and recipient are specified in your Config file.")

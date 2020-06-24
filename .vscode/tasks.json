@@ -6,7 +6,7 @@
 			"label": "docker-build",
 			"platform": "python",
 			"dockerBuild": {
-				"tag": "plexmanager:latest",
+				"tag": "jrhubott/plexmanager:latest",
 				"dockerfile": "${workspaceFolder}/docker/Dockerfile",
 				"context": "${workspaceFolder}",
 				"pull": true
